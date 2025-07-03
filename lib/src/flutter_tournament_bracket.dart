@@ -104,6 +104,8 @@ class TournamentBracket extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double separatorH = itemsMarginVertical;
+    List<int> listIndeces =
+        calculateIndices(list.map((e) => e.matches.length).toList());
     return InteractiveViewer(
       minScale: 0.1,
       maxScale: 3.0,
@@ -121,7 +123,7 @@ class TournamentBracket extends StatelessWidget {
           itemBuilder: (_, index) {
             final Tournament item = list[index];
             separatorH = calculateSeparatorHeight(
-                groupsSize: index,
+                groupsSize: listIndeces[index],
                 itemsMarginVertical: itemsMarginVertical,
                 cardHeight: cardHeight);
             return _MatchesList(
@@ -135,6 +137,8 @@ class TournamentBracket extends StatelessWidget {
           },
           separatorBuilder: (_, index) {
             final Tournament item = list[index];
+            final Tournament nextItem = list[index + 1];
+            final bool isEqual = item.matches.length == nextItem.matches.length;
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -142,10 +146,24 @@ class TournamentBracket extends StatelessWidget {
                   child: SizedBox(
                     width: lineWidth,
                     child: ListView.separated(
-                      itemCount: item.matches.length ~/ 2,
+                      itemCount: isEqual
+                          ? item.matches.length
+                          : item.matches.length ~/ 2,
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (_, index) {
+                        if (isEqual) {
+                          return SizedBox(
+                            height: cardHeight,
+                            child: Center(
+                              child: Divider(
+                                thickness: lineThickness,
+                                height: lineThickness,
+                                color: lineColor,
+                              ),
+                            ),
+                          );
+                        }
                         return Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -186,7 +204,8 @@ class TournamentBracket extends StatelessWidget {
                       },
                       separatorBuilder: (_, index) {
                         return SizedBox(
-                          height: (cardHeight + separatorH),
+                          height:
+                              isEqual ? separatorH : (cardHeight + separatorH),
                         );
                       },
                     ),

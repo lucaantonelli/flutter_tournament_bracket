@@ -16,3 +16,21 @@ double calculateSeparatorHeight({
   }
   return separatorHeight;
 }
+
+List<int> calculateIndices(List<int> values) {
+  if (values.isEmpty) return [];
+
+  List<int> indices = [0];
+  int currentIndex = 0;
+
+  // Itera dal secondo elemento in poi
+  for (int i = 1; i < values.length; i++) {
+    // Se il valore è diverso dal precedente, incrementa l'indice
+    if (values[i] != values[i - 1]) {
+      currentIndex++;
+    }
+    indices.add(currentIndex);
+  }
+
+  return indices;
+}
